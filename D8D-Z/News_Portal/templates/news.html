@@ -1,0 +1,60 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_tags %}
+{% load custom_censorship %}
+
+{% load cache %}
+    {% cache 30 title %}
+        {% block title %}
+        news
+        {% endblock title %}
+    {% endcache %}
+
+{% block content %}
+   <h1>Все посты</h1>
+    <h1>Всего публикаций: {{news|length}}</h1>
+   <hr>
+   {% if news %}
+       <table>
+           {% load cache %}
+           {% cache 30 table %}
+           <tr>
+               <td>Заголовок</td>
+               <td>Дата публикации</td>
+               <td>Содержание</td>
+           </tr>
+           {% endcache %}
+           {% for new in news %}
+           <tr>
+               <td>{{ new.heading|censor }}</td>
+               <td>{{ new.time_in|date:'d M Y' }}</td>
+               <td>{{ new.text|truncatechars:20|censor }}</td>
+           </tr>
+           {% endfor %}
+
+       </table>
+    {% endif %}
+
+   {# Добавляем пагинацию на страницу #}
+
+   {# Информация о предыдущих страницах #}
+   {% if page_obj.has_previous %}
+       <a href="?{% url_replace page=1 %}">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}

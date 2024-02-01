@@ -1,0 +1,15 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_censorship %}
+
+{% block title %}
+new
+{% endblock title %}
+
+{% block content %}
+
+<h1>{{ new.heading|censor }}</h1>
+<h4>{{ new.time_in|date:'d M Y' }}</h4>
+<h4>{{ new.text|censor }}</h4>
+
+{% endblock content %}
